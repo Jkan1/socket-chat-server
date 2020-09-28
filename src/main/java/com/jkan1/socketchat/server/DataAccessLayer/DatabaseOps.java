@@ -17,14 +17,14 @@ public class DatabaseOps {
     private static String userTable = "";
     private static String chatTable = "";
 
-    public static Connection getConnection() throws SQLException {
+    public static Connection getConnection() throws Exception {
 
         if (connection == null) {
             final String MYSQL_HOST = System.getenv("MYSQL_HOST");
             final String MYSQL_PORT = System.getenv("MYSQL_PORT");
             final String MYSQL_USER = System.getenv("MYSQL_USER");
             final String MYSQL_PASS = System.getenv("MYSQL_PASS");
-            connection = DriverManager.getConnection("jdbc:mysql://" + MYSQL_HOST + ":" + MYSQL_PORT + "/SocketChat", MYSQL_USER, MYSQL_PASS);
+            connection = DriverManager.getConnection("jdbc:mysql://" + MYSQL_HOST + ":" + MYSQL_PORT + "/SocketChat?useSSL=false", MYSQL_USER, MYSQL_PASS);
         }
         return connection;
     }
@@ -53,7 +53,7 @@ public class DatabaseOps {
         System.out.println("Bootstrap: " + (errorCount > 0 ? errorCount + " Errors" : "SUCCESS"));
     }
 
-    private static void createUsersTable(String name) throws SQLException {
+    private static void createUsersTable(String name) throws Exception {
         getConnection();
         Statement statement = connection.createStatement();
         String sql = "CREATE TABLE " + name + "(id int primary key auto_increment, name VARCHAR(30), joining_time date)";
@@ -61,7 +61,7 @@ public class DatabaseOps {
         disconnect();
     }
 
-    private static void createChatTable(String name) throws SQLException {
+    private static void createChatTable(String name) throws Exception {
         getConnection();
         Statement statement = connection.createStatement();
         String sql = "CREATE TABLE " + name + "(msg_id VARCHAR(40) primary key, name VARCHAR(30), msg VARCHAR(200))";
@@ -69,7 +69,7 @@ public class DatabaseOps {
         disconnect();
     }
 
-    public static void insertUser(String user) throws SQLException {
+    public static void insertUser(String user) throws Exception {
         getConnection();
 
         PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO " + userTable + " VALUES (null, ?, ?)");
@@ -85,7 +85,7 @@ public class DatabaseOps {
         disconnect();
     }
 
-    public static void storeChat(String user, String msg_id, String msg) throws SQLException {
+    public static void storeChat(String user, String msg_id, String msg) throws Exception {
 
         getConnection();
 

@@ -72,7 +72,7 @@ public class Server {
             return user;
         }
 
-        public void saveInDB(String chatUser, String msg) throws SQLException {
+        public void saveInDB(String chatUser, String msg) throws Exception {
             String msg_id = chatUser + "_" + System.currentTimeMillis();
             DatabaseOps.storeChat(user, msg_id, msg);
         }

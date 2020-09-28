@@ -101,7 +101,6 @@ public class Server {
                     }
                 }
             } catch (Exception ex) {
-                System.out.println(ex.toString());
                 System.out.println("Error: " + ex);
             }
         }

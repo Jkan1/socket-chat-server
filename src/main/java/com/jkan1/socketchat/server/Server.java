@@ -18,6 +18,7 @@ public class Server {
 
     private static ArrayList<String> users = new ArrayList<>();
     private static ArrayList<MessagingThread> clients = new ArrayList<>();
+    private static String EXIT_CODE = "<EXIT_SOCKET_CHAT_SERVER>";
 
     public static void main(String[] args) throws Exception {
         final int SERVER_PORT = Integer.parseInt(System.getenv("SERVER_PORT"));
@@ -32,13 +33,15 @@ public class Server {
         }
     }
 
-    public static void sendToAll(String user, String message) {
+    public static void sendToAll(String user, String message, boolean sendToSelf) {
 
         for (MessagingThread c : clients) {
             if (!c.getUser().equals(user)) {
-                c.sendMessage(user, message);
+                c.sendMessage(user, message, sendToSelf);
             } else {
-                c.sendToMe(user, message);
+                if (sendToSelf) {
+                    c.sendToMe(user, message);
+                }
             }
         }
     }
@@ -60,8 +63,12 @@ public class Server {
             DatabaseOps.insertUser(user);
         }
 
-        public void sendMessage(String chatUser, String msg) {
-            output.println(chatUser + ": " + msg);
+        public void sendMessage(String chatUser, String msg, boolean userActive) {
+            if (userActive) {
+                output.println(chatUser + ": " + msg);
+            } else {
+                output.println(msg);
+            }
         }
 
         public void sendToMe(String chatUser, String msg) {
@@ -83,17 +90,19 @@ public class Server {
             try {
                 while (true) {
                     line = input.readLine();
-                    if (line.equals("end")) {
+                    if (line.equals(EXIT_CODE)) {
                         clients.remove(this);
                         users.remove(user);
+                        sendToAll(user, user + " left chat...", false);
                         break;
                     } else {
-                        sendToAll(user, line);
+                        sendToAll(user, line, true);
                         saveInDB(user, line);
                     }
                 }
             } catch (Exception ex) {
-                System.out.println(ex.getMessage());
+                System.out.println(ex.toString());
+                System.out.println("Error: " + ex);
             }
         }
     }
